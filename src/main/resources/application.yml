@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: ${SPRING_APP_NAME:oauth-Server}
+  datasource:
+    url: jdbc:mysql://localhost:3306/audio_player?useSSL=false&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
+    username: root
+    password: mysql
+  sql:
+    init:
+      mode: ALWAYS    #change it accordingly
+      #      schema-locations: classpath:/sql/schema.sql
+      data-locations: classpath:/sql/data.sql
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  output:
+    ansi:
+      enabled: ALWAYS
+      console-available: true
+
+
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+    defer-datasource-initialization: true
