@@ -1,0 +1,5 @@
+--create table users (
+--    id integer,
+--    username text,
+--    password text
+--);
