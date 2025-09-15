@@ -74,7 +74,7 @@
 			<scope>test</scope>
 		</dependency>
         <!-- Dependencies for jwt  -->
-       <!-- <dependency>
+        <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
             <version>0.13.0</version>
@@ -88,11 +88,10 @@
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-jackson</artifactId> &lt;!&ndash; or jjwt-gson if Gson is preferred &ndash;&gt;
+            <artifactId>jjwt-jackson</artifactId> <!-- or jjwt-gson if Gson is preferred -->
             <version>0.13.0</version>
             <scope>runtime</scope>
         </dependency>
-        -->
         <!-- Uncomment this next dependency if you are using:
              - JDK 10 or earlier, and you want to use RSASSA-PSS (PS256, PS384, PS512) signature algorithms.
              - JDK 10 or earlier, and you want to use EdECDH (X25519 or X448) Elliptic Curve Diffie-Hellman encryption.
