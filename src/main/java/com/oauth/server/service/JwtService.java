@@ -11,10 +11,7 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
@@ -32,21 +29,27 @@ public class JwtService {
         }
     }
 
-    public String generateToken(String username) {
-
+    public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-
+        claims.put("roles", userDetails.getAuthorities()
+                .stream()
+                .map(auth -> auth.getAuthority())
+                .toList());
 
         return Jwts.builder()
                 .claims()
                 .add(claims)
-                .subject(username) //subject is username
+                .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + (60 * 60 * 30)))
+                .expiration(new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 10))) // 10 hours
                 .and()
                 .signWith(getKey())
-                .compact()
-                ;
+                .compact();
+    }
+
+    public List<String> extractRoles(String token) {
+        Claims claims = extractAllClaims(token);
+        return claims.get("roles", List.class);
     }
 
     private SecretKey getKey() {
