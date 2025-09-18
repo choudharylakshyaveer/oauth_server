@@ -5,6 +5,7 @@ import com.oauth.server.repo.UserPrincipal;
 import com.oauth.server.repo.UserRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,18 +15,24 @@ import org.springframework.stereotype.Service;
 @Service
 public class MyUserDetailsService implements UserDetailsService {
 
-    @Autowired
-    UserRepo userRepo;
+    private final UserRepo repo;
+
+    public MyUserDetailsService(UserRepo repo) {
+        this.repo = repo;
+    }
+
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        log.info("Looking for user with username: {}", username);
-        Users user = userRepo.findByUsername(username).orElse(null);
-        if (user == null) {
-            log.error("User not found!");
-            throw new UsernameNotFoundException("User not found!");
-        }
+        Users user = repo.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        return new UserPrincipal(user);
+        return User
+                .withUsername(user.getUsername())
+                .password(user.getPassword())
+                .authorities(user.getRoles().stream()
+                        .map(Enum::name) // convert Role enum to string (ROLE_USER, ROLE_ADMIN)
+                        .toArray(String[]::new))
+                .build();
     }
 }
