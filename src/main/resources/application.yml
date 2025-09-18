@@ -2,21 +2,22 @@ spring:
   application:
     name: ${SPRING_APP_NAME:oauth-Server}
   datasource:
-    url: jdbc:mysql://localhost:3306/test?useSSL=false&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
-    username: root
-    password: mysql
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/test?useSSL=false&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:mysql}
   sql:
     init:
-      mode: ALWAYS    #change it accordingly
+      mode: ALWAYS
 #      schema-locations: classpath:/sql/schema.sql
       data-locations: classpath:/sql/data.sql
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: create-drop    #update
     show-sql: true
     properties:
       hibernate:
         format_sql: true
+    defer-datasource-initialization: true
   output:
     ansi:
       enabled: ALWAYS
@@ -25,16 +26,31 @@ spring:
     user:
       name: user
       password: 123
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
-    defer-datasource-initialization: true
+      roles: USER
 
 logging:
   level:
-    root: TRACE
+    root: ${LOGGING_LEVEL_ROOT:INFO}
     org:
       hibernate:
         type:
           descriptor:
-            sql : TRACE
+            sql: ${LOGGING_LEVEL_HIBERNATE_SQL:DEBUG}
+
+# ==============================
+# Security Matchers
+# ==============================
+security:
+  endpoints:
+    public-matchers:
+      - /register
+      - /login
+    role-based:
+      - path: /admin/**
+        roles:
+          - ADMIN
+      - path: /user/**
+        roles:
+          - USER
+          - ADMIN
+
