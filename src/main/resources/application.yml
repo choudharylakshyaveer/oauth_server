@@ -22,11 +22,6 @@ spring:
     ansi:
       enabled: ALWAYS
       console-available: true
-  security:
-    user:
-      name: user
-      password: 123
-      roles: USER
 
 logging:
   level:
@@ -54,3 +49,5 @@ security:
           - USER
           - ADMIN
 
+server:
+  port: ${SERVER_PORT:8080}
