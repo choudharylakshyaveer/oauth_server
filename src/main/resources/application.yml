@@ -24,11 +24,6 @@ spring:
     ansi:
       enabled: ALWAYS
       console-available: true
-  security:
-    user:
-      name: user
-      password: 123
-      roles: USER
 
   docker:
     compose:
@@ -49,6 +44,8 @@ logging:
 # Security Matchers
 # ==============================
 security:
+  jwt:
+    secret: superSecretKey12345678901234567890
   endpoints:
     public-matchers:
       - /register
