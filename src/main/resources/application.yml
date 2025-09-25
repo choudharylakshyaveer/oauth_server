@@ -44,6 +44,8 @@ logging:
 # Security Matchers
 # ==============================
 security:
+  jwt:
+    secret: superSecretKey12345678901234567890
   endpoints:
     public-matchers:
       - /register
