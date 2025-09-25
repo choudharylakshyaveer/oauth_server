@@ -2,6 +2,7 @@ spring:
   application:
     name: ${SPRING_APP_NAME:oauth-Server}
   datasource:
+#    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://host.docker.internal:3306/test?useSSL=false&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true}
     url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/test?useSSL=false&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true}
     username: ${SPRING_DATASOURCE_USERNAME:root}
     password: ${SPRING_DATASOURCE_PASSWORD:mysql}
@@ -17,15 +18,22 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
     defer-datasource-initialization: true
   output:
     ansi:
       enabled: ALWAYS
       console-available: true
 
+  docker:
+    compose:
+      enabled: ${DOCKER_INITIALIZATION:false}
+
+
 logging:
   level:
     root: ${LOGGING_LEVEL_ROOT:INFO}
+    org.springframework.boot.docker.compose: DEBUG
     org:
       hibernate:
         type:
