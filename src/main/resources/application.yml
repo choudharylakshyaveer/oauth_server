@@ -3,7 +3,7 @@ spring:
     name: ${SPRING_APP_NAME:oauth-Server}
   datasource:
 #    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://host.docker.internal:3306/test?useSSL=false&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true}
-#    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://db:3306/test?useSSL=false&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true}
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/test?useSSL=false&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true}
     username: ${SPRING_DATASOURCE_USERNAME:root}
     password: ${SPRING_DATASOURCE_PASSWORD:mysql}
   sql:
@@ -29,6 +29,11 @@ spring:
       name: user
       password: 123
       roles: USER
+
+  docker:
+    compose:
+      enabled: ${DOCKER_INITIALIZATION:false}
+
 
 logging:
   level:
