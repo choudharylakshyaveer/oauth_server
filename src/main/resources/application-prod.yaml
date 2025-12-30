@@ -1,0 +1,86 @@
+server:
+  port: ${OAUTH_PORT:8081}
+  servlet:
+    session:
+      timeout: ${SESSION_TIMEOUT:120s}
+
+spring:
+  application:
+    name: ${SPRING_APP_NAME:Auth Server}
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:audio_player}?${DB_PARAMS:useSSL=false&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true}
+    username: ${MYSQL_USERNAME:root}
+    password: ${MYSQL_PASSWORD:mysql}
+  sql:
+    init:
+      mode: ${SPRING_SQL_INIT_MODE:ALWAYS}
+      data-locations: classpath:/sql/data.sql
+#      schema-locations: classpath:/sql/schema.sql
+  jpa:
+    hibernate:
+      ddl-auto: ${DDL_AUTO:update}
+    show-sql: true
+  output:
+    ansi:
+      enabled: ALWAYS
+      console-available: true
+  main:
+    allow-bean-definition-overriding: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+    defer-datasource-initialization: true
+
+logging:
+  pattern:
+    console: "%d{yyyy-MMM-dd HH:mm:ss.SSS} [%thread] %highlight(%-5level) %cyan(%logger{15}) - %msg %n"
+  level:
+    root: ${LOGGING_LEVEL_ROOT:INFO}
+    org:
+      apache: INFO
+      springframework: INFO
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql: ${LOGGING_LEVEL_HIBERNATE_SQL:DEBUG}
+    spring:
+      security: ${SPRING_SECURITY_LOGGING_LEVEL:TRACE}
+
+# ==============================
+# Security Matchers
+# ==============================
+security:
+  jwt:
+    secret: ${SECURITY_JWT_SECRET:superSecretKey12345678901234567890}
+  endpoints:
+    public-matchers:
+      - /register
+      - /login
+    role-based:
+      - path: /admin/**
+        roles:
+          - ADMIN
+      - path: /user/**
+        roles:
+          - USER
+          - ADMIN
+
+
+
+cors:
+  allowed-origins: ${CORS_ALLOWED_ORIGINS}
+  allowed-methods:
+    - GET
+    - POST
+    - PUT
+    - DELETE
+    - OPTIONS
+  allowed-headers:
+    - Authorization
+    - Content-Type
+  exposed-headers:
+    - Authorization
+    - Content-Length
+    - Content-Range
+  allow-credentials: true

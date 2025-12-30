@@ -1,0 +1,45 @@
+services:
+  oauth_server:
+    build: .
+    container_name: oauth-server
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_APP_NAME: oauth-Server
+
+      DB_HOST: auth_mysql
+      DB_PORT: 3306          # ✅ FIXED
+      DB_NAME: auth_db       # ✅ FIXED
+      DB_PARAMS: useSSL=false&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
+
+      MYSQL_USERNAME: ${MYSQL_USERNAME}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+
+      AUTH_SERVER_PORT: ${AUTH_SERVER_PORT}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
+      SECURITY_JWT_SECRET: ${SECURITY_JWT_SECRET}
+
+    depends_on:
+      - auth_mysql
+
+  auth_mysql:
+    image: mysql:8.0.43
+    container_name: auth_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: mysql
+      MYSQL_DATABASE: auth_db
+    ports:
+      - "3308:3306"
+    volumes:
+      - auth_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+
+volumes:
+  auth_mysql_data:
