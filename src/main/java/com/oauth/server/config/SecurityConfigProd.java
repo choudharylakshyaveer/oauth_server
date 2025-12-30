@@ -1,9 +1,14 @@
 package com.oauth.server.config;
 
-import com.oauth.server.config.JwtFilter;
+import com.oauth.server.config.cors.CorsProperties;
 import com.oauth.server.model.Endpoints;
 import com.oauth.server.service.MyUserDetailsService;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import java.util.Arrays;
+import java.util.List;
+
+import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,27 +25,27 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
-
-import java.util.List;
 
 @Configuration
 @EnableConfigurationProperties(Endpoints.class)
-@Profile("local")
-public class SecurityConfig {
+@Profile("prod")
+@Slf4j
+public class SecurityConfigProd {
 
     private final MyUserDetailsService userDetailsService;
     private final JwtFilter jwtFilter;
     private final Endpoints endpoints;
+    private final CorsProperties corsProperties;
 
-
-    public SecurityConfig(MyUserDetailsService userDetailsService,
-                          JwtFilter jwtFilter,
-                          Endpoints endpoints) {
+    public SecurityConfigProd(MyUserDetailsService userDetailsService,
+                              JwtFilter jwtFilter,
+                              Endpoints endpoints, CorsProperties corsProperties) {
         this.userDetailsService = userDetailsService;
         this.jwtFilter = jwtFilter;
         this.endpoints = endpoints;
+        this.corsProperties = corsProperties;
     }
 
     @Bean
@@ -83,21 +88,29 @@ public class SecurityConfig {
 //    }
 
     @Bean
-    public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOriginPatterns(
-                List.of("http://localhost:3000", "http://100.125.57.120:3000")
-        );
+        List<String> origins = Arrays.stream(corsProperties.getAllowedOrigins().split(","))
+                .map(String::trim)
+                .toList();
 
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
-        config.setExposedHeaders(List.of("Authorization"));
-        config.setAllowCredentials(true);
+        log.info("Allowed CORS origins = {}", origins);
+
+        config.setAllowedOrigins(origins);
+        config.setAllowedMethods(corsProperties.getAllowedMethods());
+        config.setAllowedHeaders(corsProperties.getAllowedHeaders());
+        config.setExposedHeaders(corsProperties.getExposedHeaders());
+        config.setAllowCredentials(corsProperties.getAllowCredentials());
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
+    }
+
+    @PostConstruct
+    public void debugCors() {
+        log.error("RAW allowedOrigins property = [{}]", corsProperties.getAllowedOrigins());
     }
 
 
