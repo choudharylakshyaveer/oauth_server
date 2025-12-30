@@ -11,7 +11,6 @@ spring:
   sql:
     init:
       mode: ALWAYS
-#      schema-locations: classpath:/sql/schema.sql
       data-locations: classpath:/sql/data.sql
   jpa:
     hibernate:
