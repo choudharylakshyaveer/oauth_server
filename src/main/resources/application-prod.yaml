@@ -15,7 +15,6 @@ spring:
     init:
       mode: ${SPRING_SQL_INIT_MODE:ALWAYS}
       data-locations: classpath:/sql/data.sql
-#      schema-locations: classpath:/sql/schema.sql
   jpa:
     hibernate:
       ddl-auto: ${DDL_AUTO:update}
